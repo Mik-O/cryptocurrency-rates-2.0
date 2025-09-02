@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6MP-5W-0YZ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dHq-Ak-e3n">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -8,49 +8,67 @@
     </dependencies>
     <scenes>
         <!--Cryptocurrency rates-->
-        <scene sceneID="JkI-GA-Wbr">
+        <scene sceneID="KFG-14-MvY">
             <objects>
-                <tableViewController id="l7J-xw-4cR" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="1nj-Fm-TJE">
+                <tableViewController id="F0f-i3-TBk" customClass="CryptocurrencyTableViewController" customModule="cryptocurrency_rates_2_0" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="YUB-Xa-rG6">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="iDE-fV-cMW">
-                                <rect key="frame" x="0.0" y="50" width="320" height="43.5"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="UDe-5n-jW4">
+                                <rect key="frame" x="0.0" y="50" width="320" height="47"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="iDE-fV-cMW" id="8LP-uD-NNM">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="UDe-5n-jW4" id="hVw-W4-d2O" customClass="TableViewCell" customModule="cryptocurrency_rates_2_0" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="47"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xEB-e7-lLM">
+                                            <rect key="frame" x="24" y="13" width="42" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="xEB-e7-lLM" firstAttribute="top" secondItem="hVw-W4-d2O" secondAttribute="topMargin" constant="2" id="Npb-HM-52L"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="xEB-e7-lLM" secondAttribute="bottom" constant="2" id="NrF-XC-VOt"/>
+                                        <constraint firstItem="xEB-e7-lLM" firstAttribute="leading" secondItem="hVw-W4-d2O" secondAttribute="leadingMargin" constant="8" id="bhu-rJ-C84"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="nameLabel" destination="xEB-e7-lLM" id="hss-QJ-UHn"/>
+                                    </connections>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="l7J-xw-4cR" id="S1M-ra-Ifl"/>
-                            <outlet property="delegate" destination="l7J-xw-4cR" id="BOS-Np-Ooj"/>
+                            <outlet property="dataSource" destination="F0f-i3-TBk" id="eIe-vT-iw2"/>
+                            <outlet property="delegate" destination="F0f-i3-TBk" id="jmQ-sT-5dn"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Cryptocurrency rates" id="TbA-Ej-oUy"/>
+                    <navigationItem key="navigationItem" title="Cryptocurrency rates" id="yTh-f7-Zf8"/>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="BWU-cg-iTv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3cp-pR-1cR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="176" y="750"/>
+            <point key="canvasLocation" x="2760" y="580.9859154929577"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="09L-dR-jnP">
+        <scene sceneID="iRZ-Ip-Flu">
             <objects>
-                <navigationController id="6MP-5W-0YZ" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="CBi-eF-Kvp">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dHq-Ak-e3n" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1k0-d8-7sb">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="l7J-xw-4cR" kind="relationship" relationship="rootViewController" id="Si9-2n-lev"/>
+                        <segue destination="F0f-i3-TBk" kind="relationship" relationship="rootViewController" id="EB0-mG-WKh"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xaF-TG-wXz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U10-hw-n9c" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-799" y="750"/>
+            <point key="canvasLocation" x="1762.5" y="580.9859154929577"/>
         </scene>
     </scenes>
     <resources>
