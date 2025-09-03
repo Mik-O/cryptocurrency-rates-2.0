@@ -9,50 +9,44 @@ import UIKit
 
 class CryptocurrencyTableViewController: UITableViewController {
     
-    var cryptocurrencies: [Crypocurrency] = []
-        
+    // MARK: - Properies
+    private let networkService = NetworkService.shared
+    private var cryptocurrencies: [Crypocurrency] = []
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rowHeight = 100
-        fetchData()
-        
+        setupTableView()
+        setupRefreshControl()
+        loadData()
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        cryptocurrencies.count
+    // MARK: - Setup
+    private func setupTableView() {
+        title = "Криптовалюты"
+        tableView.register(CryptocurrencyTableViewCell.self, forCellReuseIdentifier: CryptocurrencyTableViewCell.indetifier)
+        tableView.estimatedRowHeight = 70
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
-        let cryptocurrency = cryptocurrencies[indexPath.row]
-        cell.textLabel?.text = cryptocurrency.data.name
-        cell.detailTextLabel?.text = "\(cryptocurrency.data.symbol)"
-        
-        return cell
+    private func setupRefreshControl() {
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        tableView.refreshControl = refreshControl
     }
     
-}
-
-extension CryptocurrencyTableViewController {
-    func fetchData() {
-        guard let url = URL(string: URLS.cryptocurencyapi.rawValue) else { return }
+    // MARK: - Data loading
+    private func loadData() {
+        showloadingIndicator()
         
-        URLSession.shared.dataTask(with: url) { (data, _, _) in
-            print(data)
-            guard let data = data else { return }
-            
-            do {
-                let cryptocurrencies = try JSONDecoder().decode([Crypocurrency].self, from: data)
-                print(cryptocurrencies)
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            } catch {
-                print("Error: \(error)")
+        networkService.fetchData { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.hideLoadingIndicator()
+                self.refreshControl?.endRefreshing()
+                
             }
-            
-            
-        }.resume()
+        }
     }
+    
+    
 }
