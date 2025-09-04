@@ -4,37 +4,43 @@
 //
 //  Created by Таня Кожевникова on 28.08.2025.
 //
-
 import Foundation
 
-// MARK: - Crypocurrency
-struct Crypocurrency: Codable {
-    let data: DataClass
+// MARK: - Crypto Response для списка криптовалют
+struct CryptoResponse: Codable {
     let status: Status
+    let data: [CryptoCurrency]
 }
 
-// MARK: - DataClass
-struct DataClass: Codable {
-    let symbol, id, name: String
-    let amount: Int
-    let lastUpdated: String
-    let quote: [String: Quote]
-
+// MARK: - Crypto Currency
+struct CryptoCurrency: Codable {
+    let id: Int
+    let name: String
+    let symbol: String
+    let quote: Quote
+    
     enum CodingKeys: String, CodingKey {
-        case symbol, id, name, amount
-        case lastUpdated = "last_updated"
-        case quote
+        case id, name, symbol, quote
     }
 }
 
 // MARK: - Quote
 struct Quote: Codable {
-    let price: Double
-    let lastUpdated: String
+    let usd: USD
+    
+    enum CodingKeys: String, CodingKey {
+        case usd = "USD"
+    }
+}
 
+// MARK: - USD
+struct USD: Codable {
+    let price: Double
+    let percentChange24H: Double
+    
     enum CodingKeys: String, CodingKey {
         case price
-        case lastUpdated = "last_updated"
+        case percentChange24H = "percent_change_24h"
     }
 }
 
@@ -42,21 +48,14 @@ struct Quote: Codable {
 struct Status: Codable {
     let timestamp: String
     let errorCode: Int
-    let errorMessage: String
+    let errorMessage: String?
     let elapsed, creditCount: Int
-    let notice: String
-
+    
     enum CodingKeys: String, CodingKey {
         case timestamp
         case errorCode = "error_code"
         case errorMessage = "error_message"
         case elapsed
         case creditCount = "credit_count"
-        case notice
     }
-}
-
-enum URLS: String {
-    case cryptocurencyapi = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/category"
-
 }
