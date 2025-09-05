@@ -8,37 +8,28 @@
 import UIKit
 
 class CryptoTableViewController: UITableViewController {
-    
-    private var cryptocurrencies: [CryptoCurrency] = []
-    private let refreshController = UIRefreshControl()
-    
-    // Символы криптовалют для загрузки
-    private let cryptoSymbols = ["BTC", "ETH", "USDT", "BNB", "XRP", "ADA", "DOGE", "MATIC", "DOT", "LTC"]
+    var cryptocurrencies: [CryptoCurrency] = []
+    let refreshController = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.register(CryptoTableViewCell.self, forCellReuseIdentifier: "CryptoCell")
         setupTableView()
-        setupNavigationBar()
+        setupRefreshControl()
         fetchCryptoData()
     }
     
     private func setupTableView() {
-        tableView.register(CryptoTableViewCell.self, forCellReuseIdentifier: CryptoTableViewCell.identifier)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CryptoCell")
         tableView.rowHeight = 70
+    }
+    
+    private func setupRefreshControl() {
+        refreshController.addTarget(self, action: #selector(refreshCryptoData), for: .valueChanged)
         tableView.refreshControl = refreshController
-        refreshController.addTarget(self, action: #selector(refreshData), for: .valueChanged)
     }
     
-    private func setupNavigationBar() {
-        title = "Cryptocurrencies"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        
-        // Добавляем кнопку обновления
-        let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(refreshData))
-        navigationItem.rightBarButtonItem = refreshButton
-    }
-    
-    @objc private func refreshData() {
+    @objc private func refreshCryptoData() {
         fetchCryptoData()
     }
     
@@ -51,67 +42,43 @@ class CryptoTableViewController: UITableViewController {
                 case .success(let cryptos):
                     self?.cryptocurrencies = cryptos
                     self?.tableView.reloadData()
-                    print("Успешно загружено \(cryptos.count) криптовалют")
                 case .failure(let error):
-                    self?.handleError(error)
+                    self?.showErrorAlert(message: error.localizedDescription)
                 }
             }
         }
     }
     
-    private func handleError(_ error: NetworkError) {
-        var errorMessage = ""
-        
-        switch error {
-        case .apiKeyMissing:
-            errorMessage = "API key is missing. Please set your CoinMarketCap API key in NetworkManager.swift"
-        case .invalidURL:
-            errorMessage = "Invalid URL"
-        case .requestFailed:
-            errorMessage = "Network request failed"
-        case .decodingFailed:
-            errorMessage = "Failed to decode response"
-        case .invalidResponse:
-            errorMessage = "Invalid server response"
-        }
-        
-        showError(message: errorMessage)
-    }
-    
-    private func showError(message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            self?.fetchCryptoData()
+        })
         present(alert, animated: true)
     }
     
-    // MARK: - Table view data source
+    // MARK: - TableView DataSource
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cryptocurrencies.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CryptoTableViewCell.identifier, for: indexPath) as? CryptoTableViewCell else {
-            return UITableViewCell()
-        }
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CryptoCell", for: indexPath)
         let crypto = cryptocurrencies[indexPath.row]
-        cell.configure(with: crypto)
+        
+        // Настраиваем ячейку
+        cell.textLabel?.text = "\(crypto.name) (\(crypto.symbol))"
+        cell.detailTextLabel?.text = crypto.formattedPrice
+        cell.detailTextLabel?.textColor = .systemGreen
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
         let crypto = cryptocurrencies[indexPath.row]
-        let detailVC = CryptoDetailViewController()
-        detailVC.cryptoCurrency = crypto // Убедитесь, что это свойство существует
-        navigationController?.pushViewController(detailVC, animated: true)
-    }
-    
-    private func showDetail(for crypto: CryptoCurrency) {
-        let detailVC = CryptoDetailViewController()
-        detailVC.cryptoCurrency = crypto
-        navigationController?.pushViewController(detailVC, animated: true)
+        print("Выбрана криптовалюта: \(crypto.name), цена: \(crypto.formattedPrice)")
     }
 }

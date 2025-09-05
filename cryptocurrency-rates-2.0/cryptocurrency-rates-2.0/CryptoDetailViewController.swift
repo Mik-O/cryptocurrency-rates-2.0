@@ -8,91 +8,34 @@
 import UIKit
 
 class CryptoDetailViewController: UIViewController {
+    var cryptocurrency: CryptoCurrency!
     
-    var cryptoCurrency: CryptoCurrency! 
-    
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
-    }()
-    
-    private let contentView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 24, weight: .bold)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let symbolLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .medium)
-        label.textColor = .gray
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let priceLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let changeLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .medium)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let infoStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private let infoStack = UIStackView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        configureWithData()
+        setupConstraints()
+        addInfoCards()
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        title = "Details"
+        title = cryptocurrency.name
         
+        // Настройка ScrollView и ContentView
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubview(iconImageView)
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(symbolLabel)
-        contentView.addSubview(priceLabel)
-        contentView.addSubview(changeLabel)
+        // Настройка InfoStack
+        infoStack.axis = .vertical
+        infoStack.spacing = 16
+        infoStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(infoStack)
-        
-        setupConstraints()
-        addInfoCards()
     }
     
     private func setupConstraints() {
@@ -108,28 +51,7 @@ class CryptoDetailViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            iconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            iconImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 80),
-            iconImageView.heightAnchor.constraint(equalToConstant: 80),
-            
-            nameLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 16),
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            symbolLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
-            symbolLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            symbolLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            priceLabel.topAnchor.constraint(equalTo: symbolLabel.bottomAnchor, constant: 24),
-            priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            changeLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
-            changeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            changeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            infoStack.topAnchor.constraint(equalTo: changeLabel.bottomAnchor, constant: 32),
+            infoStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             infoStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             infoStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             infoStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
@@ -137,13 +59,37 @@ class CryptoDetailViewController: UIViewController {
     }
     
     private func addInfoCards() {
-        let idCard = createInfoCard(title: "ID", value: "\(cryptoCurrency.id)")
-        let symbolCard = createInfoCard(title: "Symbol", value: cryptoCurrency.symbol)
-        let changeCard = createInfoCard(title: "24h Change", value: formatPercentageChange(cryptoCurrency.quote.usd.percentChange24H))
-        
+        // Карточка с ID
+        let idCard = createInfoCard(title: "ID", value: "\(cryptocurrency.id)")
         infoStack.addArrangedSubview(idCard)
+        
+        // Карточка с символом
+        let symbolCard = createInfoCard(title: "Symbol", value: cryptocurrency.symbol)
         infoStack.addArrangedSubview(symbolCard)
-        infoStack.addArrangedSubview(changeCard)
+        
+        // Карточка с ценой
+        if let usdQuote = cryptocurrency.quote["USD"] {
+            let priceCard = createInfoCard(title: "Price", value: formatPrice(usdQuote.price))
+            infoStack.addArrangedSubview(priceCard)
+            
+            // Карточка с изменением за 24 часа (если данные доступны)
+            if let percentChange24h = usdQuote.percentChange24h {
+                let changeCard = createInfoCard(
+                    title: "24h Change",
+                    value: formatPercentageChange(percentChange24h)
+                )
+                infoStack.addArrangedSubview(changeCard)
+            }
+            
+            // Карточка с рыночной капитализацией (если данные доступны)
+            if let marketCap = usdQuote.marketCap {
+                let marketCapCard = createInfoCard(
+                    title: "Market Cap",
+                    value: formatMarketCap(marketCap)
+                )
+                infoStack.addArrangedSubview(marketCapCard)
+            }
+        }
     }
     
     private func createInfoCard(title: String, value: String) -> UIView {
@@ -154,76 +100,51 @@ class CryptoDetailViewController: UIViewController {
         
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         titleLabel.textColor = .secondaryLabel
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         let valueLabel = UILabel()
         valueLabel.text = value
-        valueLabel.font = .systemFont(ofSize: 16, weight: .semibold)
-        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        valueLabel.textColor = .label
         
-        // Если это изменение цены, устанавливаем цвет
-        if title == "24h Change" {
-            let change = cryptoCurrency.quote.usd.percentChange24H
-            valueLabel.textColor = change >= 0 ? .systemGreen : .systemRed
-        }
-        
-        card.addSubview(titleLabel)
-        card.addSubview(valueLabel)
+        let stack = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
+        stack.axis = .vertical
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(stack)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
-            titleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            
-            valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            valueLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            valueLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            valueLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12)
+            stack.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            stack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            stack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12)
         ])
         
         return card
     }
     
-    private func configureWithData() {
-        nameLabel.text = cryptoCurrency.name
-        symbolLabel.text = cryptoCurrency.symbol
-        priceLabel.text = formatPrice(cryptoCurrency.quote.usd.price)
-        
-        // Устанавливаем изменение цены
-        let change = cryptoCurrency.quote.usd.percentChange24H
-        changeLabel.text = formatPercentageChange(change)
-        changeLabel.textColor = change >= 0 ? .systemGreen : .systemRed
-        
-        // Устанавливаем иконку
-        switch cryptoCurrency.symbol {
-        case "BTC":
-            iconImageView.image = UIImage(systemName: "bitcoinsign.circle.fill")
-            iconImageView.tintColor = .systemOrange
-        case "ETH":
-            iconImageView.image = UIImage(systemName: "circle.hexagongrid.fill")
-            iconImageView.tintColor = .systemBlue
-        case "USDT":
-            iconImageView.image = UIImage(systemName: "dollarsign.circle.fill")
-            iconImageView.tintColor = .systemGreen
-        default:
-            iconImageView.image = UIImage(systemName: "bitcoinsign.circle.fill")
-            iconImageView.tintColor = .systemPurple
-        }
-    }
-    
     private func formatPrice(_ price: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "$"
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = price < 1 ? 6 : 2
-        return formatter.string(from: NSNumber(value: price)) ?? "$0.00"
+        if price < 1 {
+            return String(format: "$%.6f", price)
+        } else {
+            return String(format: "$%.2f", price)
+        }
     }
     
     private func formatPercentageChange(_ change: Double) -> String {
         let sign = change >= 0 ? "+" : ""
+        let color: UIColor = change >= 0 ? .systemGreen : .systemRed
         return String(format: "%@%.2f%%", sign, change)
+    }
+    
+    private func formatMarketCap(_ marketCap: Double) -> String {
+        if marketCap >= 1_000_000_000 {
+            return String(format: "$%.2fB", marketCap / 1_000_000_000)
+        } else if marketCap >= 1_000_000 {
+            return String(format: "$%.2fM", marketCap / 1_000_000)
+        } else {
+            return String(format: "$%.0f", marketCap)
+        }
     }
 }

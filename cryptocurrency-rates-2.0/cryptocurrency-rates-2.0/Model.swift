@@ -6,50 +6,19 @@
 //
 import Foundation
 
-// MARK: - Crypto Response для списка криптовалют
-struct CryptoResponse: Codable {
-    let status: Status
+// Модель для ответа API
+struct CryptoResponse: Decodable {
     let data: [CryptoCurrency]
+    let status: Status
 }
 
-// MARK: - Crypto Currency
-struct CryptoCurrency: Codable {
-    let id: Int
-    let name: String
-    let symbol: String
-    let quote: Quote
-    
-    enum CodingKeys: String, CodingKey {
-        case id, name, symbol, quote
-    }
-}
-
-// MARK: - Quote
-struct Quote: Codable {
-    let usd: USD
-    
-    enum CodingKeys: String, CodingKey {
-        case usd = "USD"
-    }
-}
-
-// MARK: - USD
-struct USD: Codable {
-    let price: Double
-    let percentChange24H: Double
-    
-    enum CodingKeys: String, CodingKey {
-        case price
-        case percentChange24H = "percent_change_24h"
-    }
-}
-
-// MARK: - Status
-struct Status: Codable {
+// Модель для статуса ответа
+struct Status: Decodable {
     let timestamp: String
     let errorCode: Int
     let errorMessage: String?
-    let elapsed, creditCount: Int
+    let elapsed: Int
+    let creditCount: Int
     
     enum CodingKeys: String, CodingKey {
         case timestamp
@@ -57,5 +26,43 @@ struct Status: Codable {
         case errorMessage = "error_message"
         case elapsed
         case creditCount = "credit_count"
+    }
+}
+
+// Модель для криптовалюты
+struct CryptoCurrency: Decodable {
+    let id: Int
+    let name: String
+    let symbol: String
+    let quote: [String: Quote]
+    
+    // Вычисляемое свойство для удобного доступа к цене
+    var price: Double {
+        return quote["USD"]?.price ?? 0
+    }
+    
+    var formattedPrice: String {
+        return String(format: "$%.2f", price)
+    }
+}
+
+// Модель для котировок
+struct Quote: Decodable {
+    let price: Double
+    let volume24h: Double?
+    let percentChange1h: Double?
+    let percentChange24h: Double?
+    let percentChange7d: Double?
+    let marketCap: Double?
+    let lastUpdated: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case price
+        case volume24h = "volume_24h"
+        case percentChange1h = "percent_change_1h"
+        case percentChange24h = "percent_change_24h"
+        case percentChange7d = "percent_change_7d"
+        case marketCap = "market_cap"
+        case lastUpdated = "last_updated"
     }
 }

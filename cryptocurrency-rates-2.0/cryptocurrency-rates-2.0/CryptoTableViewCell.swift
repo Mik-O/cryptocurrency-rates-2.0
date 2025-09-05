@@ -8,39 +8,13 @@
 import UIKit
 
 class CryptoTableViewCell: UITableViewCell {
-    static let identifier = "CryptoTableViewCell"
+    // UI элементы
+    let cryptoIcon = UIImageView()
+    let nameLabel = UILabel()
+    let symbolLabel = UILabel()
+    let priceLabel = UILabel()
     
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let symbolLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = .gray
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let priceLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textAlignment = .right
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let cryptoIcon: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(systemName: "bitcoinsign.circle.fill")
-        imageView.tintColor = .systemOrange
-        return imageView
-    }()
+    private let textStack = UIStackView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -52,15 +26,32 @@ class CryptoTableViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        let textStack = UIStackView(arrangedSubviews: [nameLabel, symbolLabel])
+        // Настройка иконки
+        cryptoIcon.translatesAutoresizingMaskIntoConstraints = false
+        cryptoIcon.contentMode = .scaleAspectFit
+        contentView.addSubview(cryptoIcon)
+        
+        // Настройка текстового стека
         textStack.axis = .vertical
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentView.addSubview(cryptoIcon)
         contentView.addSubview(textStack)
+        
+        // Настройка меток
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        symbolLabel.font = UIFont.systemFont(ofSize: 14)
+        symbolLabel.textColor = .gray
+        priceLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        priceLabel.textAlignment = .right
+        
+        textStack.addArrangedSubview(nameLabel)
+        textStack.addArrangedSubview(symbolLabel)
+        
+        // Настройка ценовой метки
+        priceLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(priceLabel)
         
+        // Констрейнты
         NSLayoutConstraint.activate([
             cryptoIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             cryptoIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -76,34 +67,38 @@ class CryptoTableViewCell: UITableViewCell {
     }
     
     func configure(with crypto: CryptoCurrency) {
-            nameLabel.text = crypto.name
-            symbolLabel.text = crypto.symbol
-            priceLabel.text = formatPrice(crypto.quote.usd.price)
-          
-          // Устанавливаем иконку в зависимости от символа
-          switch crypto.symbol {
-          case "BTC":
-              cryptoIcon.image = UIImage(systemName: "bitcoinsign.circle.fill")
-              cryptoIcon.tintColor = .systemOrange
-          case "ETH":
-              cryptoIcon.image = UIImage(systemName: "circle.hexagongrid.fill")
-              cryptoIcon.tintColor = .systemBlue
-          case "USDT":
-              cryptoIcon.image = UIImage(systemName: "dollarsign.circle.fill")
-              cryptoIcon.tintColor = .systemGreen
-          default:
-              cryptoIcon.image = UIImage(systemName: "bitcoinsign.circle.fill")
-              cryptoIcon.tintColor = .systemPurple
-          }
-      }
+        nameLabel.text = crypto.name
+        symbolLabel.text = crypto.symbol
+        
+        // Исправленная строка - получаем цену из USD котировки
+        if let usdQuote = crypto.quote["USD"] {
+            priceLabel.text = formatPrice(usdQuote.price)
+        } else {
+            priceLabel.text = "N/A"
+        }
+        
+        // Установка иконки в зависимости от символа
+        switch crypto.symbol.uppercased() {
+        case "BTC":
+            cryptoIcon.image = UIImage(systemName: "bitcoin.sign.circle.fill")
+            cryptoIcon.tintColor = .systemOrange
+        case "ETH":
+            cryptoIcon.image = UIImage(systemName: "circle.hexagongrid.fill")
+            cryptoIcon.tintColor = .systemBlue
+        case "USDT":
+            cryptoIcon.image = UIImage(systemName: "dollarsign.circle.fill")
+            cryptoIcon.tintColor = .systemGreen
+        default:
+            cryptoIcon.image = UIImage(systemName: "questionmark.circle.fill")
+            cryptoIcon.tintColor = .systemGray
+        }
+    }
     
     private func formatPrice(_ price: Double) -> String {
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .currency
-            formatter.currencySymbol = "$"
-            formatter.minimumFractionDigits = 2
-            formatter.maximumFractionDigits = price < 1 ? 6 : 2
-            return formatter.string(from: NSNumber(value: price)) ?? "$0.00"
+        if price < 1 {
+            return String(format: "$%.4f", price)
+        } else {
+            return String(format: "$%.2f", price)
         }
+    }
 }
-
