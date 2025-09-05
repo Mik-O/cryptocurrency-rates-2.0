@@ -13,14 +13,13 @@ class CryptoTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(CryptoTableViewCell.self, forCellReuseIdentifier: "CryptoCell")
         setupTableView()
         setupRefreshControl()
         fetchCryptoData()
     }
     
     private func setupTableView() {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CryptoCell")
+        tableView.register(CryptoTableViewCell.self, forCellReuseIdentifier: "CryptoCell")
         tableView.rowHeight = 70
     }
     
@@ -65,20 +64,21 @@ class CryptoTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CryptoCell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CryptoCell", for: indexPath) as? CryptoTableViewCell else {
+            return UITableViewCell()
+        }
+        
         let crypto = cryptocurrencies[indexPath.row]
-        
-        // Настраиваем ячейку
-        cell.textLabel?.text = "\(crypto.name) (\(crypto.symbol))"
-        cell.detailTextLabel?.text = crypto.formattedPrice
-        cell.detailTextLabel?.textColor = .systemGreen
-        
+        cell.configure(with: crypto)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let crypto = cryptocurrencies[indexPath.row]
-        print("Выбрана криптовалюта: \(crypto.name), цена: \(crypto.formattedPrice)")
+        
+        let detailVC = CryptoDetailViewController()
+        detailVC.cryptocurrency = crypto
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

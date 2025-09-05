@@ -134,7 +134,6 @@ class CryptoDetailViewController: UIViewController {
     
     private func formatPercentageChange(_ change: Double) -> String {
         let sign = change >= 0 ? "+" : ""
-        let color: UIColor = change >= 0 ? .systemGreen : .systemRed
         return String(format: "%@%.2f%%", sign, change)
     }
     

@@ -8,7 +8,7 @@ import Foundation
 
 class NetworkManager {
     static let shared = NetworkManager()
-    private let apiKey = "f102813e-2db1-4252-8c3d-edd73e8a7752" 
+    private let apiKey = "f102813e-2db1-4252-8c3d-edd73e8a7752" // Замените на ваш API-ключ
     private let baseURL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
     
     // Функция для получения данных о криптовалютах
@@ -16,6 +16,7 @@ class NetworkManager {
         // Создаем URL с параметрами
         var components = URLComponents(string: baseURL)!
         components.queryItems = [
+            URLQueryItem(name: "start", value: "1"),
             URLQueryItem(name: "limit", value: "\(limit)"),
             URLQueryItem(name: "convert", value: "USD")
         ]
@@ -57,14 +58,45 @@ class NetworkManager {
                 return
             }
             
+            // Для отладки выведем сырой ответ
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Raw API response: \(jsonString.prefix(500))...") // Выводим первые 500 символов
+            }
+            
             // Декодируем данные
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                // Убираем автоматическое преобразование ключей, так как у нас есть ручные CodingKeys
                 let cryptoResponse = try decoder.decode(CryptoResponse.self, from: data)
+                
+                // Проверим статус ответа
+                if cryptoResponse.status.errorCode != 0 {
+                    let errorMessage = cryptoResponse.status.errorMessage ?? "Unknown API error"
+                    completion(.failure(NetworkError.apiError(message: errorMessage)))
+                    return
+                }
+                
                 completion(.success(cryptoResponse.data))
             } catch {
                 print("Decoding error: \(error)")
+                print("Error details: \(error.localizedDescription)")
+                
+                // Детальная информация об ошибке декодирования
+                if let decodingError = error as? DecodingError {
+                    switch decodingError {
+                    case .keyNotFound(let key, let context):
+                        print("Key not found: \(key) in context: \(context)")
+                    case .typeMismatch(let type, let context):
+                        print("Type mismatch: \(type) in context: \(context)")
+                    case .valueNotFound(let value, let context):
+                        print("Value not found: \(value) in context: \(context)")
+                    case .dataCorrupted(let context):
+                        print("Data corrupted: \(context)")
+                    @unknown default:
+                        print("Unknown decoding error")
+                    }
+                }
+                
                 completion(.failure(NetworkError.decodingError))
             }
         }
@@ -80,6 +112,7 @@ enum NetworkError: Error, LocalizedError {
     case httpError(statusCode: Int)
     case noData
     case decodingError
+    case apiError(message: String)
     
     var errorDescription: String? {
         switch self {
@@ -93,6 +126,8 @@ enum NetworkError: Error, LocalizedError {
             return "Данные не получены"
         case .decodingError:
             return "Ошибка декодирования данных"
+        case .apiError(let message):
+            return "Ошибка API: \(message)"
         }
     }
 }

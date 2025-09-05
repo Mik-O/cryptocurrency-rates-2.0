@@ -19,6 +19,8 @@ struct Status: Decodable {
     let errorMessage: String?
     let elapsed: Int
     let creditCount: Int
+    let notice: String?
+    let totalCount: Int
     
     enum CodingKeys: String, CodingKey {
         case timestamp
@@ -26,6 +28,8 @@ struct Status: Decodable {
         case errorMessage = "error_message"
         case elapsed
         case creditCount = "credit_count"
+        case notice
+        case totalCount = "total_count"
     }
 }
 
@@ -34,7 +38,17 @@ struct CryptoCurrency: Decodable {
     let id: Int
     let name: String
     let symbol: String
+    let slug: String
+    let numMarketPairs: Int
+    let dateAdded: String
+    let tags: [String]
     let quote: [String: Quote]
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, symbol, slug, tags, quote
+        case numMarketPairs = "num_market_pairs"
+        case dateAdded = "date_added"
+    }
     
     // Вычисляемое свойство для удобного доступа к цене
     var price: Double {
@@ -43,6 +57,14 @@ struct CryptoCurrency: Decodable {
     
     var formattedPrice: String {
         return String(format: "$%.2f", price)
+    }
+    
+    var percentChange24h: Double? {
+        return quote["USD"]?.percentChange24h
+    }
+    
+    var marketCap: Double? {
+        return quote["USD"]?.marketCap
     }
 }
 
