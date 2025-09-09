@@ -16,6 +16,9 @@ class CryptoTableViewController: UITableViewController {
         setupTableView()
         setupRefreshControl()
         fetchCryptoData()
+        
+        title = "Криптовалюты"
+            navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     private func setupTableView() {
@@ -81,4 +84,22 @@ class CryptoTableViewController: UITableViewController {
         detailVC.cryptocurrency = crypto
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    // Реализация метода для удаления строк
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Удаляем криптовалюту из массива
+            cryptocurrencies.remove(at: indexPath.row)
+            
+            // Удаляем строку из таблицы с анимацией
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+    }
+
+    // Опционально: ограничим удаление только некоторыми строками
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true // Разрешаем удаление всех строк
+    }
+    
+    
 }

@@ -8,11 +8,11 @@ import Foundation
 
 class NetworkManager {
     static let shared = NetworkManager()
-    private let apiKey = "f102813e-2db1-4252-8c3d-edd73e8a7752" // Замените на ваш API-ключ
+    private let apiKey = "f102813e-2db1-4252-8c3d-edd73e8a7752"
     private let baseURL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
     
     // Функция для получения данных о криптовалютах
-    func fetchCryptoData(limit: Int = 20, completion: @escaping (Result<[CryptoCurrency], Error>) -> Void) {
+    func fetchCryptoData(limit: Int = 100, completion: @escaping (Result<[CryptoCurrency], Error>) -> Void) {
         // Создаем URL с параметрами
         var components = URLComponents(string: baseURL)!
         components.queryItems = [

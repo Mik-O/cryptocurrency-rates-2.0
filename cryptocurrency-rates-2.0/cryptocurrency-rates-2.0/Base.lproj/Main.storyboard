@@ -17,27 +17,11 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CryptoCell" id="UDe-5n-jW4" customClass="CryptoTableViewCell" customModule="cryptocurrency_rates_2_0" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="50" width="320" height="47.5"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="UDe-5n-jW4" id="hVw-W4-d2O" customClass="TableViewCell" customModule="cryptocurrency_rates_2_0" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="47.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xEB-e7-lLM">
-                                            <rect key="frame" x="24" y="13" width="42" height="21.5"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="xEB-e7-lLM" firstAttribute="top" secondItem="hVw-W4-d2O" secondAttribute="topMargin" constant="2" id="Npb-HM-52L"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="xEB-e7-lLM" secondAttribute="bottom" constant="2" id="NrF-XC-VOt"/>
-                                        <constraint firstItem="xEB-e7-lLM" firstAttribute="leading" secondItem="hVw-W4-d2O" secondAttribute="leadingMargin" constant="8" id="bhu-rJ-C84"/>
-                                    </constraints>
-                                    <connections>
-                                        <outlet property="nameLabel" destination="xEB-e7-lLM" id="hss-QJ-UHn"/>
-                                    </connections>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
