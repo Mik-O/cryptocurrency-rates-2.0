@@ -19,19 +19,18 @@ class CryptoDetailViewController: UIViewController {
         setupUI()
         setupConstraints()
         addInfoCards()
+//        animateCards()
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         title = cryptocurrency.name
         
-        // Настройка ScrollView и ContentView
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        // Настройка InfoStack
         infoStack.axis = .vertical
         infoStack.spacing = 16
         infoStack.translatesAutoresizingMaskIntoConstraints = false
@@ -59,20 +58,16 @@ class CryptoDetailViewController: UIViewController {
     }
     
     private func addInfoCards() {
-        // Карточка с ID
         let idCard = createInfoCard(title: "ID", value: "\(cryptocurrency.id)")
         infoStack.addArrangedSubview(idCard)
         
-        // Карточка с символом
         let symbolCard = createInfoCard(title: "Symbol", value: cryptocurrency.symbol)
         infoStack.addArrangedSubview(symbolCard)
         
-        // Карточка с ценой
         if let usdQuote = cryptocurrency.quote["USD"] {
             let priceCard = createInfoCard(title: "Price", value: formatPrice(usdQuote.price))
             infoStack.addArrangedSubview(priceCard)
             
-            // Карточка с изменением за 24 часа (если данные доступны)
             if let percentChange24h = usdQuote.percentChange24h {
                 let changeCard = createInfoCard(
                     title: "24h Change",
@@ -81,7 +76,6 @@ class CryptoDetailViewController: UIViewController {
                 infoStack.addArrangedSubview(changeCard)
             }
             
-            // Карточка с рыночной капитализацией (если данные доступны)
             if let marketCap = usdQuote.marketCap {
                 let marketCapCard = createInfoCard(
                     title: "Market Cap",
@@ -91,6 +85,28 @@ class CryptoDetailViewController: UIViewController {
             }
         }
     }
+    
+//    private func animateCards() {
+//        for case let card as UIView in infoStack.arrangedSubviews {
+//            card.alpha = 0
+//            card.transform = CGAffineTransform(translationX: 0, y: 30)
+//        }
+//        
+//        for (index, case let card as UIView) in infoStack.arrangedSubviews.enumerated() {
+//            UIView.animate(
+//                withDuration: 0.5,
+//                delay: Double(index) * 0.1,
+//                usingSpringWithDamping: 0.7,
+//                initialSpringVelocity: 0.5,
+//                options: .curveEaseInOut,
+//                animations: {
+//                    card.alpha = 1
+//                    card.transform = .identity
+//                }
+//            )
+//        }
+//    }
+    
     
     private func createInfoCard(title: String, value: String) -> UIView {
         let card = UIView()

@@ -8,7 +8,6 @@
 import UIKit
 
 class CryptoTableViewCell: UITableViewCell {
-    // UI элементы
     let cryptoIcon = UIImageView()
     let nameLabel = UILabel()
     let symbolLabel = UILabel()
@@ -19,6 +18,7 @@ class CryptoTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+        setupAnimations()
     }
     
     required init?(coder: NSCoder) {
@@ -26,18 +26,15 @@ class CryptoTableViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        // Настройка иконки
         cryptoIcon.translatesAutoresizingMaskIntoConstraints = false
         cryptoIcon.contentMode = .scaleAspectFit
         contentView.addSubview(cryptoIcon)
         
-        // Настройка текстового стека
         textStack.axis = .vertical
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(textStack)
         
-        // Настройка меток
         nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
         symbolLabel.font = UIFont.systemFont(ofSize: 14)
         symbolLabel.textColor = .gray
@@ -47,11 +44,9 @@ class CryptoTableViewCell: UITableViewCell {
         textStack.addArrangedSubview(nameLabel)
         textStack.addArrangedSubview(symbolLabel)
         
-        // Настройка ценовой метки
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(priceLabel)
         
-        // Констрейнты
         NSLayoutConstraint.activate([
             cryptoIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             cryptoIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -66,18 +61,49 @@ class CryptoTableViewCell: UITableViewCell {
         ])
     }
     
+    private func setupAnimations() {
+        self.alpha = 0
+        self.transform = CGAffineTransform(translationX: 0, y: 20)
+    }
+    
+    func animateAppearance(delay: Double) {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: delay,
+            usingSpringWithDamping: 0.7,
+            initialSpringVelocity: 0.5,
+            options: .curveEaseInOut,
+            animations: {
+                self.alpha = 1
+                self.transform = .identity
+            }
+        )
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        
+        if highlighted {
+            UIView.animate(withDuration: 0.1) {
+                self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }
+        } else {
+            UIView.animate(withDuration: 0.1) {
+                self.transform = .identity
+            }
+        }
+    }
+    
     func configure(with crypto: CryptoCurrency) {
         nameLabel.text = crypto.name
         symbolLabel.text = crypto.symbol
         
-        // Исправленная строка - получаем цену из USD котировки
         if let usdQuote = crypto.quote["USD"] {
             priceLabel.text = formatPrice(usdQuote.price)
         } else {
             priceLabel.text = "N/A"
         }
         
-        // Установка иконки в зависимости от символа
         switch crypto.symbol.uppercased() {
         case "BTC":
             cryptoIcon.image = UIImage(systemName: "bitcoin.sign.circle.fill")
